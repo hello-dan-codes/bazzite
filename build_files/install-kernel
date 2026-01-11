@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-export KERNEL_VERSION=6.19-0.rc1
+#export KERNEL_VERSION=6.19-0.rc1
 
 set -eoux pipefail
 
