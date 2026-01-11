@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+export KERNEL_VERSION=6.19-0.rc1
+
 set -eoux pipefail
 
 echo "::group::Executing install-kernel"
@@ -39,10 +41,13 @@ elif [[ "$IMAGE_NAME" == *"nvidia"* ]]; then
     pkgs+=("kernel-nvidia-closed-lts")
 fi
 
+# Allow overriding the kernel version/pattern via env var (e.g. 6.19-0.rc1 or 6.19)
+KERNEL_VERSION="${KERNEL_VERSION:-6}"
+
 PKG_PAT=()
 for pkg in "${pkgs[@]}"; do
-    # FIXME: assumes the kernel starts with version 6
-    PKG_PAT+=("/rpms/kernel/${pkg}-6"*)
+    # Use the provided KERNEL_VERSION to match rc or full versions
+    PKG_PAT+=("/rpms/kernel/${pkg}-${KERNEL_VERSION}"*)
 done
 
 dnf5 -y install ${PKG_PAT[@]}
