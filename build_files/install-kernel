@@ -19,12 +19,61 @@ popd
 
 dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra kernel-tools kernel-tools-libs
 
-echo "Installing CachyOS Kernel"
-dnf5 copr enable -y zeno/kernel-cachyos
-dnf5 -y install kernel-cachyos
+pkgs=(
+    kernel
+    kernel-core
+    kernel-modules
+    kernel-modules-core
+    kernel-modules-extra
+    kernel-modules-akmods
+    kernel-devel
+    kernel-devel-matched
+    kernel-tools
+    kernel-tools-libs
+    kernel-common
+)
 
-pkgs=("kernel-cachyos")
+if [[ "$IMAGE_NAME" == *"nvidia-open" || "$IMAGE_NAME" == *"-deck-nvidia"* ]]; then
+    echo "Using NVIDIA Open Kernel"
+    pkgs+=("kernel-nvidia")
+elif [[ "$IMAGE_NAME" == *"nvidia"* ]]; then
+    echo "Using NVIDIA Closed Kernel with Legacy driver"
+    pkgs+=("kernel-nvidia-closed-lts")
+fi
+
+# Allow overriding the kernel version/pattern via env var (e.g. 6.19-0.rc1 or 6.19)
+KERNEL_VERSION="${KERNEL_VERSION:-6}"
+
+PKG_PAT=()
+for pkg in "${pkgs[@]}"; do
+    # Use the provided KERNEL_VERSION to match rc or full versions
+    PKG_PAT+=("/rpms/kernel/${pkg}-${KERNEL_VERSION}"*)
+done
+
+dnf5 -y install ${PKG_PAT[@]}
+
 dnf5 versionlock add $pkgs
+
+dnf5 copr enable -y zeno/kernel-cachyos
+dnf5 install -y kernel-cachyos
+
+ls -la /usr/lib/modules/
+
+# Prune extra module directories so lint sees a single usr/lib/modules entry.
+# Keep the lexicographically/semver latest directory and remove others.
+if [ -d /usr/lib/modules ]; then
+    mapfile -t _mods < <(ls -1 /usr/lib/modules 2>/dev/null || true)
+    if [ "${#_mods[@]}" -gt 1 ]; then
+        echo "Multiple /usr/lib/modules entries found: ${_mods[*]}"
+        latest=$(printf "%s\n" "${_mods[@]}" | sort -V | tail -n1)
+        echo "Keeping latest modules dir: $latest"
+        for m in /usr/lib/modules/*; do
+            [ "$(basename "$m")" = "$latest" ] && continue
+            echo "Removing module dir: $m"
+            rm -rf "$m"
+        done
+    fi
+fi
 
 pushd /usr/lib/kernel/install.d
 mv -f 05-rpmostree.install.bak 05-rpmostree.install
