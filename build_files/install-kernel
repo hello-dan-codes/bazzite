@@ -54,6 +54,9 @@ dnf5 -y install ${PKG_PAT[@]}
 
 dnf5 versionlock add $pkgs
 
+dnf5 copr enable -y zeno/kernel-cachyos
+dnf5 install -y kernel-cachyos
+
 pushd /usr/lib/kernel/install.d
 mv -f 05-rpmostree.install.bak 05-rpmostree.install
 mv -f 50-dracut.install.bak 50-dracut.install
