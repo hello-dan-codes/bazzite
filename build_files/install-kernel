@@ -20,7 +20,7 @@ popd
 dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra kernel-tools kernel-tools-libs
 
 echo "Installing CachyOS Kernel as primary"
-dnf5 copr enable -y zeno/kernel-cachyos
+dnf5 copr enable -y dan-james/kernel-cachyos
 dnf5 -y install kernel-cachyos
 
 dnf5 versionlock add kernel-cachyos
