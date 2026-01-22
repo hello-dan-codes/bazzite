@@ -6,7 +6,7 @@ from typing import Any
 import re
 from collections import defaultdict
 
-REGISTRY = "docker://ghcr.io/ublue-os/"
+REGISTRY = "docker://ghcr.io/hello-dan-codes/"
 
 IMAGES = [
     "bazzite",
@@ -44,7 +44,7 @@ OTHER_NAMES = {
 COMMITS_FORMAT = (
     "### Commits\n| Hash | Subject | Author |\n| --- | --- | --- |{commits}\n\n"
 )
-COMMIT_FORMAT = "\n| **[{short}](https://github.com/ublue-os/bazzite/commit/{hash})** | {subject} | {author} |"
+COMMIT_FORMAT = "\n| **[{short}](https://github.com/hello-dan-codes/bazzite/commit/{hash})** | {subject} | {author} |"
 
 CHANGELOG_TITLE = "{tag}: {pretty}"
 CHANGELOG_FORMAT = """\
@@ -71,10 +71,8 @@ From previous `{target}` version `{prev}` there have been the following changes.
 ### How to rebase
 For current users, type the following to rebase to this version:
 ```bash
-# For this branch (if latest):
-bazzite-rollback-helper rebase {target}
 # For this specific image:
-bazzite-rollback-helper rebase {curr}
+sudo bootc switch ghcr.io/hello-dan-codes/bazzite-deck:{curr}
 ```
 """
 HANDWRITTEN_PLACEHOLDER = """\
