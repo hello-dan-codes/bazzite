@@ -77,7 +77,7 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/obs-vkcapture \
         ycollet/audinux \
         ublue-os/rom-properties \
-        ublue-os/hhd \
+        hello-dan-codes/hhd \
         lizardbyte/beta \
         che/nerd-fonts; \
     do \
@@ -524,7 +524,7 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/obs-vkcapture \
         ycollet/audinux \
         ublue-os/rom-properties \
-        ublue-os/hhd \
+        hello-dan-codes/hhd \
         lizardbyte/beta \
         che/nerd-fonts; \
     do \
@@ -599,7 +599,7 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y copr enable ublue-os/bazzite && \
     dnf5 -y copr enable ublue-os/bazzite-multilib && \
     dnf5 -y copr enable ublue-os/obs-vkcapture && \
-    dnf5 -y copr enable ublue-os/hhd && \
+    dnf5 -y copr enable hello-dan-codes/hhd && \
     dnf5 -y copr enable ycollet/audinux && \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     /ctx/cleanup
@@ -716,7 +716,7 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/bazzite \
         ublue-os/bazzite-multilib \
         ublue-os/obs-vkcapture \
-        ublue-os/hhd \
+        hello-dan-codes/hhd \
         ycollet/audinux; \
     do \
         dnf5 -y copr disable -y $copr; \
