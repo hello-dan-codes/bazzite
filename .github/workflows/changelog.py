@@ -9,16 +9,7 @@ from collections import defaultdict
 REGISTRY = "docker://ghcr.io/hello-dan-codes/"
 
 IMAGES = [
-    "bazzite",
-    "bazzite-gnome",
-    "bazzite-deck",
-    "bazzite-deck-gnome",
-    "bazzite-deck-nvidia",
-    "bazzite-deck-nvidia-gnome",
-    "bazzite-nvidia",
-    "bazzite-gnome-nvidia",
-    "bazzite-nvidia-open",
-    "bazzite-gnome-nvidia-open",
+    "bazzite-deck"
 ]
 
 RETRIES = 3
@@ -61,10 +52,7 @@ From previous `{target}` version `{prev}` there have been the following changes.
 | **Gamescope** | {pkgrel:gamescope} |
 | **Bazaar** | {pkgrel:bazaar} |
 | **Ptyxis** | {pkgrel:ptyxis} |
-| **Gnome** | {pkgrel:gnome-control-center-filesystem} |
-| **KDE** | {pkgrel:plasma-desktop} |
-| **Nvidia** | {pkgrel:nvidia-kmod-common} |
-| **Nvidia LTS** | {pkgrel:nvidia-kmod-common-lts} |
+| **KDE** | {pkgrel:plasma-desktop}
 
 {changes}
 
@@ -79,7 +67,6 @@ HANDWRITTEN_PLACEHOLDER = """\
 This is an automatically generated changelog for release `{curr}`."""
 
 BLACKLIST_VERSIONS = [
-    "kernel",
     "mesa-filesystem",
     "gamescope",
     "bazaar",
