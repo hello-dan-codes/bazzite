@@ -68,8 +68,8 @@ From previous `{target}` version `{prev}` there have been the following changes.
 
 {changes}
 
-### How to rebase
-For current users, type the following to rebase to this version:
+### How to use this version
+For current users, type the following to switch to this version:
 ```bash
 # For this specific image:
 sudo bootc switch ghcr.io/hello-dan-codes/bazzite-deck:{curr}
