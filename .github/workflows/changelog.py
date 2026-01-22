@@ -79,6 +79,7 @@ BLACKLIST_VERSIONS = [
 ]
 
 PKG_ALIAS = {
+    "kernel-cachyos": "kernel",
 }
 
 
