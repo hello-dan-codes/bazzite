@@ -600,7 +600,6 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y copr enable ublue-os/bazzite-multilib && \
     dnf5 -y copr enable ublue-os/obs-vkcapture && \
     dnf5 -y copr enable dan-james/hhd && \
-    dnf5 -y copr enable xxmitsu/mesa-git && \
     dnf5 -y copr enable ycollet/audinux && \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     /ctx/cleanup
@@ -634,7 +633,6 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y install \
-        mesa \
         jupiter-fan-control \
         jupiter-hw-support-btrfs \
         galileo-mura \
