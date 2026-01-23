@@ -238,6 +238,7 @@ def get_versions(manifests: dict[str, Any]):
             if is_nvidia(img, lts=True) and "nvidia" in pkg:
                 pkg += "-lts"
             versions[pkg] = re.sub(FEDORA_PATTERN, "", v)
+    print(f"Versions: {versions}")        
     return versions
 
 
