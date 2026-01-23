@@ -135,7 +135,7 @@ RUN --mount=type=cache,dst=/var/cache \
     for repo in "${!toswap[@]}"; do \
         for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
     done && unset -v toswap repo package && \
-    dnf5 -y distro-sync --allowerasing --allow-vendor-change \
+    dnf5 -y distro-sync --allowerasing \
         --repo=copr:copr.fedorainfracloud.org:xxmitsu:mesa-git \
         mesa-filesystem \
         mesa-dri-drivers \
