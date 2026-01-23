@@ -79,14 +79,13 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/rom-properties \
         dan-james/hhd \
         lizardbyte/beta \
-        che/nerd-fonts \
-        xxmitsu/mesa-git; \
+        che/nerd-fonts; \
     do \
         echo "Enabling copr: $copr"; \
         dnf5 -y copr enable $copr; \
         dnf5 -y config-manager setopt copr:copr.fedorainfracloud.org:${copr////:}.priority=98 ;\
     done && unset -v copr && \
-    dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release{,-extras} && \
+    dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release{,-extras,-mesa} && \
     dnf5 -y config-manager addrepo --overwrite --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
     dnf5 -y install \
         https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
@@ -99,6 +98,7 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y config-manager setopt "linux-surface".enabled=false && \
     dnf5 -y config-manager setopt "*bazzite*".priority=1 && \
     dnf5 -y config-manager setopt "*terra*".priority=3 "*terra*".exclude="nerd-fonts topgrade scx-tools scx-scheds steam python3-protobuf zlib-devel" && \
+    dnf5 -y config-manager setopt "terra-mesa".enabled=true && \
     eval "$(/ctx/dnf5-setopt setopt '*negativo17*' priority=4 exclude='mesa-* *xone*')" && \
     dnf5 -y config-manager setopt "*rpmfusion*".priority=5 "*rpmfusion*".exclude="mesa-*" && \
     dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
@@ -130,20 +130,12 @@ RUN --mount=type=cache,dst=/var/cache \
     declare -A toswap=( \
         ["copr:copr.fedorainfracloud.org:ublue-os:bazzite"]="wireplumber" \
         ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland NetworkManager" \
+        ["terra-mesa"]="mesa-filesystem" \
         ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
     ) && \
     for repo in "${!toswap[@]}"; do \
         for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
     done && unset -v toswap repo package && \
-    dnf5 -y distro-sync --allowerasing \
-        --repo=copr:copr.fedorainfracloud.org:xxmitsu:mesa-git \
-        mesa-filesystem \
-        mesa-dri-drivers \
-        mesa-libEGL \
-        mesa-libGL \
-        mesa-libgbm \
-        mesa-va-drivers \
-        mesa-vulkan-drivers && \
     dnf5 versionlock add \
         pipewire \
         pipewire-alsa \
@@ -175,7 +167,7 @@ RUN --mount=type=cache,dst=/var/cache \
         NetworkManager \
         NetworkManager-wifi \
         NetworkManager-libnm && \
-    dnf5 -y --setopt=exclude= install \
+    dnf5 -y install \
         mesa-va-drivers.i686 \
         libfreeaptx && \
     dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
@@ -534,8 +526,7 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/rom-properties \
         dan-james/hhd \
         lizardbyte/beta \
-        che/nerd-fonts \
-        xxmitsu/mesa-git; \
+        che/nerd-fonts; \
     do \
         dnf5 -y copr disable $copr; \
     done && unset -v copr && \
@@ -726,8 +717,7 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/bazzite-multilib \
         ublue-os/obs-vkcapture \
         dan-james/hhd \
-        ycollet/audinux \
-        xxmitsu/mesa-git; \
+        ycollet/audinux; \
     do \
         dnf5 -y copr disable -y $copr; \
     done && unset -v copr && \
