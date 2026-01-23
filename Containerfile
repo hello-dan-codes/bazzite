@@ -79,7 +79,6 @@ RUN --mount=type=cache,dst=/var/cache \
         ublue-os/rom-properties \
         dan-james/hhd \
         lizardbyte/beta \
-        xxmitsu/mesa-git \
         che/nerd-fonts; \
     do \
         echo "Enabling copr: $copr"; \
@@ -104,7 +103,6 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y config-manager setopt "*rpmfusion*".priority=5 "*rpmfusion*".exclude="mesa-*" && \
     dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
     dnf5 -y config-manager setopt "*staging*".exclude="scx-tools scx-scheds kf6-* mesa* mutter*" && \
-    dnf5 -y install mesa && \
     /ctx/cleanup
 
 # Install kernel
@@ -602,6 +600,7 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y copr enable ublue-os/bazzite-multilib && \
     dnf5 -y copr enable ublue-os/obs-vkcapture && \
     dnf5 -y copr enable dan-james/hhd && \
+    dnf5 -y copr enable xxmitsu/mesa-git && \
     dnf5 -y copr enable ycollet/audinux && \
     dnf5 config-manager unsetopt skip_if_unavailable && \
     /ctx/cleanup
@@ -635,6 +634,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y install \
+        mesa \
         jupiter-fan-control \
         jupiter-hw-support-btrfs \
         galileo-mura \
