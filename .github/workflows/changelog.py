@@ -53,9 +53,9 @@ From previous `{target}` version `{prev}` there have been the following changes.
 | **Bazaar** | {pkgrel:bazaar} |
 | **Ptyxis** | {pkgrel:ptyxis} |
 | **KDE** | {pkgrel:plasma-desktop} |
-| **intel-gpu-firmware** | {pkgrel:intel-gpu-firmware} | 
 | **libdrm** | {pkgrel:libdrm} |
 | **hhd-git** | {pkgrel:hhd-git} |
+| **hhd-ui** | {pkgrel:hhd-ui} |
 
 {changes}
 
@@ -81,6 +81,8 @@ BLACKLIST_VERSIONS = [
     "nvidia-kmod-common-lts",
     "intel-gpu-firmware",
     "libdrm",
+    "hhd-git",
+    "hhd-ui",
 ]
 
 PKG_ALIAS = {
