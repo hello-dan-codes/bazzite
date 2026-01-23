@@ -52,7 +52,10 @@ From previous `{target}` version `{prev}` there have been the following changes.
 | **Gamescope** | {pkgrel:gamescope} |
 | **Bazaar** | {pkgrel:bazaar} |
 | **Ptyxis** | {pkgrel:ptyxis} |
-| **KDE** | {pkgrel:plasma-desktop}
+| **KDE** | {pkgrel:plasma-desktop} |
+| **intel-gpu-firmware** | {pkgrel:intel-gpu-firmware} | 
+| **libdrm** | {pkgrel:libdrm} |
+| **hhd-git** | {pkgrel:hhd-git} |
 
 {changes}
 
@@ -76,6 +79,8 @@ BLACKLIST_VERSIONS = [
     "atheros-firmware",
     "nvidia-kmod-common",
     "nvidia-kmod-common-lts",
+    "intel-gpu-firmware",
+    "libdrm",
 ]
 
 PKG_ALIAS = {
