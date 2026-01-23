@@ -130,12 +130,20 @@ RUN --mount=type=cache,dst=/var/cache \
     declare -A toswap=( \
         ["copr:copr.fedorainfracloud.org:ublue-os:bazzite"]="wireplumber" \
         ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland NetworkManager" \
-        ["copr:copr.fedorainfracloud.org:xxmitsu:mesa-git"]="mesa-filesystem" \
         ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
     ) && \
     for repo in "${!toswap[@]}"; do \
         for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
     done && unset -v toswap repo package && \
+    dnf5 -y distro-sync --allowerasing --allow-vendor-change \
+        --repo=copr:copr.fedorainfracloud.org:xxmitsu:mesa-git \
+        mesa-filesystem \
+        mesa-dri-drivers \
+        mesa-libEGL \
+        mesa-libGL \
+        mesa-libgbm \
+        mesa-va-drivers \
+        mesa-vulkan-drivers && \
     dnf5 versionlock add \
         pipewire \
         pipewire-alsa \
