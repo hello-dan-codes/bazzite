@@ -328,10 +328,9 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    dnf5 -y install \
+    dnf5 -y install --setopt=install_weak_deps=False \
         gamescope.x86_64 \
         gamescope-libs.x86_64 \
-        gamescope-libs.i686 \
         gamescope-shaders \
         jupiter-sd-mounting-btrfs \
         umu-launcher \
@@ -339,16 +338,18 @@ RUN --mount=type=cache,dst=/var/cache \
         xdg-user-dirs \
         gobject-introspection \
         libFAudio.x86_64 \
-        libFAudio.i686 \
         vkBasalt.x86_64 \
-        vkBasalt.i686 \
         mangohud.x86_64 \
-        mangohud.i686 \
         libobs_vkcapture.x86_64 \
         libobs_glcapture.x86_64 \
-        libobs_vkcapture.i686 \
-        libobs_glcapture.i686 \
         openxr && \
+    dnf5 -y install --setopt=install_weak_deps=False \
+        gamescope-libs.i686 \
+        libFAudio.i686 \
+        vkBasalt.i686 \
+        mangohud.i686 \
+        libobs_vkcapture.i686 \
+        libobs_glcapture.i686 && \
     dnf5 -y --setopt=install_weak_deps=False install \
         steam \
         lutris && \
