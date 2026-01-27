@@ -58,6 +58,7 @@ ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
 COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
 COPY firmware /
+COPY system_files/overrides/etc/yum.repos.d/mesa-git.repo /etc/yum.repos.d/mesa-git.repo
 
 # Copy Homebrew files from the brew image
 COPY --from=ghcr.io/ublue-os/brew:latest@sha256:3b2a1d41ccf2e64020934de5cc6d8af09b726ffe9985b4f3fd61ce3db308bbd0 /system_files /
@@ -69,6 +70,13 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=tmpfs,dst=/tmp \
     mkdir -p /var/roothome && \
     dnf5 -y install dnf5-plugins && \
+    dnf5 -y config-manager setopt \
+        mesa-git.enabled=1 \
+        mesa-git-x86.enabled=1 \
+        mesa-git.priority=1 \
+        mesa-git-x86.priority=1 \
+        mesa-git.module_hotfixes=1 \
+        mesa-git-x86.module_hotfixes=1 && \
     for copr in \
         ublue-os/bazzite \
         ublue-os/bazzite-multilib \
@@ -130,7 +138,7 @@ RUN --mount=type=cache,dst=/var/cache \
     declare -A toswap=( \
         ["copr:copr.fedorainfracloud.org:ublue-os:bazzite"]="wireplumber" \
         ["copr:copr.fedorainfracloud.org:ublue-os:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland NetworkManager" \
-        ["terra-mesa"]="mesa-filesystem" \
+        # ["terra-mesa"]="mesa-filesystem" \
         ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
     ) && \
     for repo in "${!toswap[@]}"; do \
@@ -153,13 +161,13 @@ RUN --mount=type=cache,dst=/var/cache \
         bluez-libs \
         bluez-obexd \
         xorg-x11-server-Xwayland \
-        mesa-dri-drivers \
-        mesa-filesystem \
-        mesa-libEGL \
-        mesa-libGL \
-        mesa-libgbm \
-        mesa-va-drivers \
-        mesa-vulkan-drivers \
+        # mesa-dri-drivers \
+        # mesa-filesystem \
+        # mesa-libEGL \
+        # mesa-libGL \
+        # mesa-libgbm \
+        # mesa-va-drivers \
+        # mesa-vulkan-drivers \
         fwupd \
         fwupd-plugin-flashrom \
         fwupd-plugin-modem-manager \
@@ -167,8 +175,18 @@ RUN --mount=type=cache,dst=/var/cache \
         NetworkManager \
         NetworkManager-wifi \
         NetworkManager-libnm && \
+    dnf5 -y remove "mesa-*" && \
+    dnf5 -y install --enablerepo=mesa-git,mesa-git-x86 \
+        mesa-dri-drivers \
+        mesa-filesystem \
+        mesa-libEGL \
+        mesa-libGL \
+        mesa-libgbm \
+        mesa-va-drivers \
+        mesa-vulkan-drivers \
+        mesa-va-drivers.i686 && \
     dnf5 -y install \
-        mesa-va-drivers.i686 \
+        # mesa-va-drivers.i686 \
         libfreeaptx && \
     dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
         libaacs \
