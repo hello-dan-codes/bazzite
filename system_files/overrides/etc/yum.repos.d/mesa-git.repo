@@ -6,6 +6,7 @@ gpgcheck=1
 gpgkey=https://copr-be.cloud.fedoraproject.org/results/xxmitsu/mesa-git/pubkey.gpg
 enabled=1
 enabled_metadata=1
+priority=1
 
 [mesa-git-x86]
 name=Copr repo with mesa built from the official mesa git - i386
@@ -15,3 +16,4 @@ gpgcheck=1
 gpgkey=https://copr-be.cloud.fedoraproject.org/results/xxmitsu/mesa-git/pubkey.gpg
 enabled=1
 enabled_metadata=1
+priority=1
