@@ -328,9 +328,10 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=secret,id=GITHUB_TOKEN \
-    dnf5 -y install --setopt=install_weak_deps=False \
+    dnf5 -y install \
         gamescope.x86_64 \
         gamescope-libs.x86_64 \
+        gamescope-libs.i686 \
         gamescope-shaders \
         jupiter-sd-mounting-btrfs \
         umu-launcher \
@@ -338,18 +339,16 @@ RUN --mount=type=cache,dst=/var/cache \
         xdg-user-dirs \
         gobject-introspection \
         libFAudio.x86_64 \
+        libFAudio.i686 \
         vkBasalt.x86_64 \
+        vkBasalt.i686 \
         mangohud.x86_64 \
+        mangohud.i686 \
         libobs_vkcapture.x86_64 \
         libobs_glcapture.x86_64 \
-        openxr && \
-    dnf5 -y install --setopt=install_weak_deps=False \
-        gamescope-libs.i686 \
-        libFAudio.i686 \
-        vkBasalt.i686 \
-        mangohud.i686 \
         libobs_vkcapture.i686 \
-        libobs_glcapture.i686 && \
+        libobs_glcapture.i686 \
+        openxr && \
     dnf5 -y --setopt=install_weak_deps=False install \
         steam \
         lutris && \
@@ -399,9 +398,7 @@ RUN --mount=type=cache,dst=/var/cache \
             kde-partitionmanager \
             plasma-discover \
             konsole && \
-        if [ -f /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml ]; then \
-            sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:steam.desktop,applications:net.lutris.Lutris.desktop,applications:org.gnome.Ptyxis.desktop,applications:io.github.kolunmi.Bazaar.desktop,preferred:\/\/filemanager<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml; \
-        fi && \
+        sed -i '/<entry name="launchers" type="StringList">/,/<\/entry>/ s/<default>[^<]*<\/default>/<default>preferred:\/\/browser,applications:steam.desktop,applications:net.lutris.Lutris.desktop,applications:org.gnome.Ptyxis.desktop,applications:io.github.kolunmi.Bazaar.desktop,preferred:\/\/filemanager<\/default>/' /usr/share/plasma/plasmoids/org.kde.plasma.taskmanager/contents/config/main.xml && \
         sed -i 's@\[Desktop Action new-window\]@\[Desktop Action new-window\]\nX-KDE-Shortcuts=Ctrl+Alt+T@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i '/^Comment/d' /usr/share/applications/org.gnome.Ptyxis.desktop && \
         sed -i 's@Exec=ptyxis@Exec=kde-ptyxis@g' /usr/share/applications/org.gnome.Ptyxis.desktop && \
