@@ -175,7 +175,7 @@ RUN --mount=type=cache,dst=/var/cache \
         NetworkManager \
         NetworkManager-wifi \
         NetworkManager-libnm && \
-    dnf5 -y remove "mesa-*" && \
+    # dnf5 -y remove "mesa-*" && \
     dnf5 -y install --enablerepo=mesa-git \
         mesa-dri-drivers \
         mesa-filesystem \
@@ -183,8 +183,8 @@ RUN --mount=type=cache,dst=/var/cache \
         mesa-libGL \
         mesa-libgbm \
         mesa-va-drivers \
-        mesa-vulkan-drivers \
-        dnf5 -y install --enablerepo=mesa-git-x86 \
+        mesa-vulkan-drivers && \
+    dnf5 -y install --enablerepo=mesa-git-x86 \
         mesa-va-drivers.i686 \
         libfreeaptx && \
     dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
