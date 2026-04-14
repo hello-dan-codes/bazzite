@@ -4,7 +4,7 @@
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml)
 
-# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [🇨🇳](https://github.com/ublue-os/bazzite/blob/main/README-zh-cn.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/README-FR.md) [🇧🇷](https://github.com/ublue-os/bazzite/blob/main/README-BR.md) [🇳🇱](https://github.com/ublue-os/bazzite/blob/main/README-NL.md) [🇷🇺](https://github.com/ublue-os/bazzite/blob/main/README-RU.md)
+# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [🇨🇳](https://github.com/ublue-os/bazzite/blob/main/README-zh-cn.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/README-FR.md) [🇧🇷](https://github.com/ublue-os/bazzite/blob/main/README-BR.md) [🇳🇱](https://github.com/ublue-os/bazzite/blob/main/README-NL.md) [🇷🇺](https://github.com/ublue-os/bazzite/blob/main/README-RU.md) [🇹🇼](https://github.com/ublue-os/bazzite/blob/main/README-ZH-TW.md)
 
 <p align="center">
   <a href="https://download.bazzite.gg/"><img src="/repo_content/download.png?raw=true" alt="Скачать Bazzite"/></a>
@@ -13,7 +13,7 @@
 ---
 
 # Содержание
-- [🇺🇸 🇪🇸 🇮🇩 🇨🇳 🇫🇷 🇧🇷 🇳🇱 🇷🇺](#-------)
+- [🇺🇸 🇪🇸 🇮🇩 🇨🇳 🇫🇷 🇧🇷 🇳🇱 🇷🇺 🇹🇼](#--------)
 - [Содержание](#содержание)
   - [О проекте и особенности](#о-проекте-и-особенности)
     - [Десктопная версия](#десктопная-версия)
@@ -43,7 +43,7 @@
 
 Bazzite основан на [ublue-os/main](https://github.com/ublue-os/main) и [ublue-os/nvidia](https://github.com/ublue-os/nvidia) с использованием технологий [Fedora](https://fedoraproject.org/), что обеспечивает расширенную поддержку оборудования и встроенные драйверы. Дополнительно Bazzite включает следующие функции:
 
-- Использует [ядро bazzite](https://github.com/bazzite-org/kernel-bazzite) для поддержки HDR и расширенной работы с оборудованием, а также множество других патчей — основано на [ядре fsync](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).
+- Использует [ядро bazzite](https://github.com/bazzite-org/kernel-bazzite) для поддержки HDR и расширенной работы с оборудованием, а также множество других патчей.
 - Поддержка HDR в игровом режиме.
 - NVK доступен в сборках без NVIDIA.
 - Полная поддержка аппаратного ускорения для декодирования H264.

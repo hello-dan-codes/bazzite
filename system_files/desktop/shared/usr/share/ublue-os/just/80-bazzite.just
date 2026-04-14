@@ -19,20 +19,34 @@ _install-system-flatpaks:
     FLATPAK_LIST="$(curl https://raw.githubusercontent.com/ublue-os/bazzite/main/installer/${FLATPAKS} | tr '\n' ' ')"
     flatpak --system -y install --reinstall --or-update ${FLATPAK_LIST}
 
-# Toggle SSH availability on boot
+# Toggle SSH availability on boot. Options: status | enable | disable
 [group("network")]
 toggle-ssh ACTION="":
     #!/usr/bin/bash
     source /usr/lib/ujust/ujust.sh
+    SSH_STATE="$(systemctl is-enabled sshd 2>/dev/null || true)"
+    get_status_token() {
+      if [[ -z "$SSH_STATE" ]]; then
+        return 1
+      elif [[ "$SSH_STATE" == *enabled* ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    OPTION="{{ ACTION }}"
+    if [ "$OPTION" == "status" ]; then
+      get_status_token
+      exit $?
+    fi
     # Get hostname and IP address
     HOSTNAME=$(hostname)
     IP_ADDRESS=$(hostname -I | awk '{print $1}') # First IP address
     # Get current SSH status
     SSH_STATUS="Disabled"
-    if systemctl is-enabled sshd | grep -q enabled; then
+    if [[ "$(get_status_token)" == "enable" ]]; then
       SSH_STATUS="Enabled"
     fi
-    OPTION="{{ ACTION }}"
     if [ "$OPTION" == "help" ]; then
       echo "Usage: ujust toggle-ssh <option>"
       echo "  <option>: Specify the option to skip the interactive prompt"
@@ -73,6 +87,50 @@ toggle-ssh ACTION="":
         ;;
     esac
 
+# Toggles REISUB, useful for force rebooting systems when pageflip timeouts and/or other horrible things happen. Options: status | enable | disable
+[group("system")]
+toggle-reisub ACTION="":
+    #!/usr/bin/bash
+    set -euo pipefail
+    source /usr/lib/ujust/ujust.sh
+    FILE="/etc/sysctl.d/90-sysrq.conf"
+    get_status_token() {
+      if [[ -f "$FILE" ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    CURRENT="Disabled"
+    if [[ "$(get_status_token)" == "enable" ]]; then
+      CURRENT="Enabled"
+    fi
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "status" ]]; then
+      get_status_token
+      exit 0
+    fi
+    if [[ -z "$OPTION" ]]; then
+      echo -e "${bold}REISUB keys:${normal} $CURRENT"
+      echo ""
+      OPTION="$(ugum choose "Enable" "Disable" "Exit without saving")"
+    fi
+    case "$OPTION" in
+      Enable|enable)
+        echo "kernel.sysrq = 1" | sudo tee "$FILE" > /dev/null
+        sudo systemctl restart systemd-sysctl.service
+        echo -e "${bold}${green}Enabled${normal}: kernel.sysrq=1"
+        ;;
+      Disable|disable)
+        sudo rm -f "$FILE"
+        sudo systemctl restart systemd-sysctl.service
+        echo -e "${red}${bold}Disabled${normal}: kernel.sysrq=1 removed"
+        ;;
+      *)
+        echo "${blue}No changes made.${normal}"
+        ;;
+    esac
+
 # Regenerate GRUB config, useful in dual-boot scenarios where a second operating system isn't listed
 [group("system")]
 regenerate-grub:
@@ -86,7 +144,7 @@ regenerate-grub:
     fi
     remount_boot_ro
 
-# Configure grub bootmenu visibility. pass action 'help' for more info.
+# Configure grub bootmenu visibility. Pass action 'help' for more info. Options: hide | unhide | show. Pairing: hide = Hide After Successful Boot | unhide = Same except when Dual Booting | show = Always Show Grub
 [group("system")]
 configure-grub ACTION="":
     #!/usr/bin/bash
@@ -202,34 +260,194 @@ configure-grub ACTION="":
       apply_setting "$OPTION"
     fi
 
-# Add user to "input" group required by certain controller drivers
-[group("hardware")]
-add-user-to-input-group:
+# Toogle a ramoops config to save panic messages across crashes
+[group("system")]
+toggle-save-panics ACTION="":
     #!/usr/bin/bash
-    if ! grep -q "input" /etc/group; then
-      sudo bash -c 'grep "input" /lib/group >> /etc/group'
-    fi
-    sudo usermod -a -G input $USER
+    source /usr/lib/ujust/ujust.sh
 
-# Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system
-[group("automounting")]
-enable-automounting:
-    #!/usr/bin/pkexec /usr/bin/bash
-    set -eo pipefail
-    rm -f /etc/udev/rules.d/99-media-automount.rules # DELETEME
-    if systemctl status --no-pager ublue-os-media-automount.service >/dev/null 2>&1; then
-        systemctl enable --now ublue-os-media-automount.service
+    if [[ -e /etc/modules-load.d/ramoops.conf ]]; then
+        STATUS=Enabled
+    else
+        STATUS=Disabled
     fi
 
-# Disables automounting of labeled BTRFS/EXT4 partitions under /run/media/system
-[group("automounting")]
-disable-automounting:
-    #!/usr/bin/pkexec /usr/bin/bash
-    set -eo pipefail
-    rm -f /etc/udev/rules.d/99-media-automount.rules # DELETEME
-    if systemctl status --no-pager ublue-os-media-automount.service >/dev/null 2>&1; then
-        systemctl disable ublue-os-media-automount.service
+    OPTION="{{ ACTION }}"
+    if [ "$OPTION" == "help" ]; then
+      echo "Usage: ujust toggle-save-panics <option>"
+      echo "  <option>: Specify the option to skip the interactive prompt"
+      echo "  Use 'enable' to enable ramoops"
+      echo "  Use 'disable' to disable ramoops"
+      exit 0
+    elif [ "$OPTION" == "" ]; then
+      echo Ramoops is a kernel module that will save panic information across a reboot and allow it to be
+      echo recovered for debugging.  Panic messages will be written to /var/lib/systemd/pstore.
+      echo
+      if [ "$STATUS" == "Enabled" ]; then
+        echo -e "${bold}ramoops configuration:${normal} ${green}$STATUS${normal}\n"
+      else
+        echo -e "${bold}ramoops configuration:${normal} ${yellow}$STATUS${normal}\n"
+      fi
+
+      OPTION=$(ugum choose "Enable ramoops" "Disable ramoops" "Exit without saving")
     fi
+
+    case "$OPTION" in
+      "Enable ramoops"|enable)
+        echo "Enabling ramoops..."
+        echo
+        echo "kernel.panic = 5" | sudo tee /etc/sysctl.d/99-panic.conf > /dev/null
+        echo "options ramoops mem_name=ramoops mem_size=0x10000 record_size=0x4000" | \
+          sudo tee /etc/modprobe.d/ramoops.conf > /dev/null
+        echo "ramoops" | sudo tee /etc/modules-load.d/ramoops.conf > /dev/null
+        sudo rpm-ostree kargs \
+          --append-if-missing="reserve_mem=64K:4096:ramoops" \
+          --append-if-missing="pstore.backend=ramoops"
+        ;;
+      "Disable ramoops"|disable)
+        echo "Disabling ramoops..."
+        echo
+        sudo rm -f /etc/sysctl.d/99-panic.conf
+        sudo rm -f /etc/modprobe.d/ramoops.conf
+        sudo rm -f /etc/modules-load.d/ramoops.conf
+        sudo rpm-ostree kargs \
+          --delete-if-present="reserve_mem=64K:4096:ramoops" \
+          --delete-if-present="pstore.backend=ramoops"
+        ;;
+      "Exit without saving"|*)
+        echo "No changes made."
+        ;;
+    esac
+
+# Add user to "input" group required by certain controller drivers. Options: status | add | remove
+[group("hardware")]
+add-user-to-input-group ACTION="":
+    #!/usr/bin/bash
+    get_status_token() {
+      if id -nG "$USER" | tr ' ' '\n' | grep -qx "input"; then
+        echo "add"
+      else
+        echo "remove"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "add" ]]; then
+        echo "Added"
+      else
+        echo "Not Added"
+      fi
+    }
+    add_user_to_input_group() {
+      if ! grep -q "input" /etc/group; then
+        sudo bash -c 'grep "input" /lib/group >> /etc/group'
+      fi
+      sudo usermod -a -G input "$USER"
+    }
+    remove_user_from_input_group() {
+      if grep -q "input" /etc/group; then
+        sudo gpasswd -d "$USER" input 2>/dev/null || true
+      fi
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+      echo "Usage: ujust add-user-to-input-group <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'status' to print the current portal token"
+      echo "  Use 'add' to add the current user to the input group"
+      echo "  Use 'remove' to remove the current user from the input group"
+      exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+      get_status_token
+      exit $?
+    elif [[ -z "$OPTION" ]]; then
+      echo "Current status: $(get_current_status)"
+      OPTION=$(ugum choose "Add" "Remove" "Exit without changes")
+      case "$OPTION" in
+        "Add")
+          add_user_to_input_group
+          ;;
+        "Remove")
+          remove_user_from_input_group
+          ;;
+        *)
+          echo "No changes made."
+          ;;
+      esac
+      exit 0
+    elif [[ "$OPTION" == "remove" ]]; then
+      remove_user_from_input_group
+      exit 0
+    fi
+    add_user_to_input_group
+
+# Enables automounting of labeled BTRFS/EXT4 partitions under /run/media/system. Options: status | enable | disable
+[group("automounting")]
+enable-automounting ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    get_status_token() {
+      if [[ -L /etc/systemd/system/multi-user.target.wants/ublue-os-media-automount.service ]]; then
+        echo "enable"
+      else
+        echo "disable"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "enable" ]]; then
+        echo "Enabled"
+      else
+        echo "Disabled"
+      fi
+    }
+    enable_automounting() {
+      pkexec /usr/bin/bash -lc '
+        set -eo pipefail
+        rm -f /etc/udev/rules.d/99-media-automount.rules
+        if systemctl status --no-pager ublue-os-media-automount.service >/dev/null 2>&1; then
+          systemctl enable --now ublue-os-media-automount.service
+        fi
+      '
+    }
+    disable_automounting_action() {
+      pkexec /usr/bin/bash -lc '
+        set -eo pipefail
+        rm -f /etc/udev/rules.d/99-media-automount.rules
+        if systemctl status --no-pager ublue-os-media-automount.service >/dev/null 2>&1; then
+          systemctl disable ublue-os-media-automount.service
+        fi
+      '
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+      echo "Usage: ujust enable-automounting <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'status' to print the current portal token"
+      echo "  Use 'enable' to enable automounting"
+      echo "  Use 'disable' to disable automounting"
+      exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+      get_status_token
+      exit $?
+    elif [[ -z "$OPTION" ]]; then
+      echo "Current status: $(get_current_status)"
+      OPTION=$(ugum choose "Enable" "Disable" "Exit without changes")
+      case "$OPTION" in
+        "Enable")
+          enable_automounting
+          ;;
+        "Disable")
+          disable_automounting_action
+          ;;
+        *)
+          echo "No changes made."
+          ;;
+      esac
+      exit 0
+    elif [[ "$OPTION" == "disable" ]]; then
+      disable_automounting_action
+      exit 0
+    fi
+    enable_automounting
 
 # Enable framework automounting udev rules.
 [group("automounting")]
@@ -245,20 +463,68 @@ disable-framework-automount:
     set -eo pipefail
     ln -sf /dev/null /etc/udev/rules.d/99-framework-steam-automount.rules
 
-# Disable SteamOS automount, this fixes ntfs partitions getting mounted.
+# Enable SteamOS automount. Options: status | enable | disable
 [group("automounting")]
-disable-steamos-automount:
-    @pkexec ln -sf /dev/null /etc/udev/rules.d/99-steamos-automount.rules
-
-# Enable SteamOS automount.
-[group("automounting")]
-enable-steamos-automount:
-    @pkexec rm -f /etc/udev/rules.d/99-steamos-automount.rules
+enable-steamos-automount ACTION="":
+    #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
+    RULE_FILE="/etc/udev/rules.d/99-steamos-automount.rules"
+    get_status_token() {
+      if [[ -L "$RULE_FILE" ]] && [[ "$(readlink "$RULE_FILE")" == "/dev/null" ]]; then
+        echo "disable"
+      else
+        echo "enable"
+      fi
+    }
+    get_current_status() {
+      if [[ "$(get_status_token)" == "enable" ]]; then
+        echo "Enabled"
+      else
+        echo "Disabled"
+      fi
+    }
+    enable_steamos_automount() {
+      pkexec rm -f "$RULE_FILE"
+    }
+    disable_steamos_automount_action() {
+      pkexec ln -sf /dev/null "$RULE_FILE"
+    }
+    OPTION="{{ ACTION }}"
+    if [[ "$OPTION" == "help" ]]; then
+      echo "Usage: ujust enable-steamos-automount <option>"
+      echo "  <option>: Specify the quick option to skip the prompt"
+      echo "  Use 'status' to print the current portal token"
+      echo "  Use 'enable' to enable SteamOS automount"
+      echo "  Use 'disable' to disable SteamOS automount"
+      exit 0
+    elif [[ "$OPTION" == "status" ]]; then
+      get_status_token
+      exit $?
+    elif [[ -z "$OPTION" ]]; then
+      echo "Current status: $(get_current_status)"
+      OPTION=$(ugum choose "Enable" "Disable" "Exit without changes")
+      case "$OPTION" in
+        "Enable")
+          enable_steamos_automount
+          ;;
+        "Disable")
+          disable_steamos_automount_action
+          ;;
+        *)
+          echo "No changes made."
+          ;;
+      esac
+      exit 0
+    elif [[ "$OPTION" == "disable" ]]; then
+      disable_steamos_automount_action
+      exit 0
+    fi
+    enable_steamos_automount
 
 # Disable all partition automounting. This might increase boot times.
 [group("automounting")]
 disable-automount-all:
-    @pkexec --keep-cwd ujust disable-framework-automount disable-automounting disable-steamos-automount
+    @pkexec --keep-cwd ujust disable-framework-automount enable-automounting disable enable-steamos-automount disable
 
 # Enable all automounting.
 [group("automounting")]
@@ -319,24 +585,6 @@ configure-watchdog ACTION="":
       rpm-ostree kargs $WATCHDOG_KARGS
     fi
 
-# Ptyxis terminal transparency
-[group("utilities")]
-ptyxis-transparency opacity="0.95":
-    #!/usr/bin/bash
-    set -euxo pipefail
-    if [[ -n "$(echo "{{ opacity }}" | grep -v '^[.0-9]*$')" ]]; then
-      printf "Value must be numeric: %s.\n" "{{ opacity }}"
-    elif [[ $(echo "0<{{ opacity }} && 1>={{ opacity }}" | bc -q) -eq 1 ]]; then
-      raw="$(gsettings get org.gnome.Ptyxis profile-uuids)"
-      uuids="$(sed -En 's|[^0-9a-z]*||g; s|([0-9a-z]{32})|\1\n|gp' <<<${raw})"
-      for i in ${uuids}; do
-        location="org.gnome.Ptyxis.Profile:/org/gnome/Ptyxis/Profiles/${i}/"
-        gsettings set "${location}" opacity "{{ opacity }}"; done
-      printf "Ptyxis opacity is now %s.\n" "{{ opacity }}"
-    else
-      printf "Value must be between 0 and 1: %s.\n" "{{ opacity }}"
-    fi
-
 # Configure snapshotting for /var/home
 [group("system")]
 configure-snapshots ACTION="":
@@ -389,7 +637,7 @@ bazzite-cli:
     # Brew Bundle Install
     function brew-bundle(){
     echo 'Installing bling from Homebrew 🍻🍻🍻'
-    brew bundle --file /usr/share/ublue-os/homebrew/bazzite-cli.Brewfile
+    brew bundle --file /usr/share/ublue-os/homebrew/bazzite-cli.Brewfile --verbose
     }
 
     # Check if bling is already sourced
@@ -542,12 +790,34 @@ benchmark:
     echo 'Running a 1 minute benchmark ...'
     cd /tmp && stress-ng --matrix 0 -t 1m --times
 
-# toggles password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled
+# toggles password prompt feedback in terminal, where sudo password prompts will display asterisks when enabled. Options: on | off
 [group("development")]
 toggle-password-feedback ACTION="":
     #!/usr/bin/bash
+    source /usr/lib/ujust/ujust.sh
     PWFEEDBACK_FILE="/etc/sudoers.d/enable-pwfeedback"
     OPTION={{ ACTION }}
+    if [ "$OPTION" = "help" ]; then
+      echo "Usage: ujust toggle-password-feedback <option>"
+      echo "  <option>: Specify the quick option to skip the toggle behavior"
+      echo "  Use 'on' to show password asterisks in sudo prompts"
+      echo "  Use 'off' to hide password asterisks in sudo prompts"
+      exit 0
+    elif [ -z "$OPTION" ]; then
+      OPTION=$(ugum choose "Show password asterisks" "Hide password asterisks" "Exit without changes")
+      case "$OPTION" in
+        "Show password asterisks")
+          OPTION="on"
+          ;;
+        "Hide password asterisks")
+          OPTION="off"
+          ;;
+        *)
+          echo "No changes made."
+          exit 0
+          ;;
+      esac
+    fi
     if [ "$OPTION" = "on" ]; then
       echo 'Defaults pwfeedback' | sudo tee $PWFEEDBACK_FILE
       echo "enabled, restart terminal to see changes"
@@ -562,7 +832,7 @@ toggle-password-feedback ACTION="":
       echo "enabled, restart terminal to see changes"
     fi
 
-# Toggle global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on Proton 10 or GE 10-25 or later
+# Toggle global Proton FSR4 upgrade on RDNA4 GPUs; upgrades FSR 3.1+ → FSR 4 on Proton 10 or GE 10-25 or later. Options: enable | disable
 [group("gaming")]
 toggle-global-fsr4 ACTION="":
     #!/usr/bin/bash
@@ -602,7 +872,7 @@ toggle-global-fsr4 ACTION="":
             ;;
     esac
 
-# Toggle global Proton FSR4 upgrade on RDNA3 GPUs; upgrades FSR 3.1+ → FSR 4, only compatible with Proton GE, Proton EM, or similar forks
+# Toggle global Proton FSR4 upgrade on RDNA3 GPUs; upgrades FSR 3.1+ → FSR 4, only compatible with Proton GE, Proton EM, or similar forks. Options: enable | disable
 [group("gaming")]
 toggle-global-fsr4-rdna3 ACTION="":
     #!/usr/bin/bash
@@ -644,7 +914,7 @@ toggle-global-fsr4-rdna3 ACTION="":
             ;;
     esac
 
-# Toggle global Proton DLSS upgrade; updates DLSS DLLs for Proton
+# Toggle global Proton DLSS upgrade; updates DLSS DLLs for Proton. Options: enable | disable
 [group("gaming")]
 toggle-global-dlss ACTION="":
     #!/usr/bin/bash

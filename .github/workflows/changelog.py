@@ -73,7 +73,6 @@ BLACKLIST_VERSIONS = [
     "mesa-filesystem",
     "gamescope",
     "bazaar",
-    "ptyxis",
     "gnome-control-center-filesystem",
     "plasma-desktop",
     "atheros-firmware",

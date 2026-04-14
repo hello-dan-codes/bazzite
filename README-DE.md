@@ -4,7 +4,7 @@
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml)
 
-# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [🇨🇳](https://github.com/ublue-os/bazzite/blob/main/README-zh-cn.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/README-FR.md) [🇧🇷](https://github.com/ublue-os/bazzite/blob/main/README-BR.md) [🇳🇱](https://github.com/ublue-os/bazzite/blob/main/README-NL.md) [🇷🇺](https://github.com/ublue-os/bazzite/blob/main/README-RU.md) [🇩🇪](https://github.com/ublue-os/bazzite/blob/main/README-DE.md)
+# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [🇨🇳](https://github.com/ublue-os/bazzite/blob/main/README-zh-cn.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/README-FR.md) [🇧🇷](https://github.com/ublue-os/bazzite/blob/main/README-BR.md) [🇳🇱](https://github.com/ublue-os/bazzite/blob/main/README-NL.md) [🇷🇺](https://github.com/ublue-os/bazzite/blob/main/README-RU.md) [🇩🇪](https://github.com/ublue-os/bazzite/blob/main/README-DE.md) [🇹🇼](https://github.com/ublue-os/bazzite/blob/main/README-ZH-TW.md)
 
 <p align="center">
   <a href="https://download.bazzite.gg/"><img src="/repo_content/download.png?raw=true" alt="Bazzite herunterladen"/></a>
@@ -14,7 +14,7 @@
 
 # Inhaltsverzeichnis
 
-- [🇺🇸 🇪🇸 🇮🇩 🇨🇳 🇫🇷 🇧🇷 🇳🇱 🇷🇺 🇩🇪](#--------)
+- [🇺🇸 🇪🇸 🇮🇩 🇨🇳 🇫🇷 🇧🇷 🇳🇱 🇷🇺 🇩🇪 🇹🇼](#---------)
 - [Inhaltsverzeichnis](#inhaltsverzeichnis)
   - [Über \& Funktionen](#über--funktionen)
     - [Desktop](#desktop)
@@ -45,7 +45,7 @@ Für eine einsteigerfreundliche Erklärung von Bazzite [besuche bitte unsere Web
 
 Bazzite basiert auf [ublue-os/main](https://github.com/ublue-os/main) und [ublue-os/nvidia](https://github.com/ublue-os/nvidia) unter Verwendung der [Fedora](https://fedoraproject.org/)-Technologie. Dies bedeutet erweiterte Hardware-Unterstützung und integrierte Treiber. Zusätzlich bietet Bazzite die folgenden Funktionen:
 
-- Verwendet den [Bazzite-Kernel](https://github.com/bazzite-org/kernel-bazzite), um HDR und erweiterte Hardware-Unterstützung zu ermöglichen, neben zahlreichen anderen enthaltenen Patches – basierend auf dem [fsync-Kernel](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).
+- Verwendet den [Bazzite-Kernel](https://github.com/bazzite-org/kernel-bazzite), um HDR und erweiterte Hardware-Unterstützung zu ermöglichen, neben zahlreichen anderen enthaltenen Patches.
 - HDR im Spielmodus verfügbar.
 - NVK auf Nicht-Nvidia-Builds verfügbar.
 - Volle Hardware-beschleunigte Codec-Unterstützung für H264-Dekodierung.

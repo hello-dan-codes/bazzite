@@ -4,7 +4,7 @@
 
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml) [![build-bazzite-isos](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build_iso.yml)
 
-# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [:cn:](https://github.com/ublue-os/bazzite/blob/main/README-zh-cn.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/README-FR.md) [🇳🇱](https://github.com/ublue-os/bazzite/blob/main/README-NL.md)
+# [🇺🇸](https://github.com/ublue-os/bazzite/blob/main/README.md) [🇪🇸](https://github.com/ublue-os/bazzite/blob/main/README-SPA.md) [🇮🇩](https://github.com/ublue-os/bazzite/blob/main/README-ID.md) [:cn:](https://github.com/ublue-os/bazzite/blob/main/README-zh-cn.md) [🇫🇷](https://github.com/ublue-os/bazzite/blob/main/README-FR.md) [🇳🇱](https://github.com/ublue-os/bazzite/blob/main/README-NL.md) [🇹🇼](https://github.com/ublue-os/bazzite/blob/main/README-ZH-TW.md)
 
 <p align="center">
   <a href="https://download.bazzite.gg/"><img src="/repo_content/download.png?raw=true" alt="Download Bazzite"/></a>
@@ -13,7 +13,7 @@
 ---
 
 # Índice
-- [🇺🇸 🇪🇸 🇮🇩 :cn: 🇫🇷 🇳🇱](#---cn--)
+- [🇺🇸 🇪🇸 🇮🇩 :cn: 🇫🇷 🇳🇱 🇹🇼](#---cn---)
 - [Índice](#índice)
   - [Sobre \& Recursos](#sobre--recursos)
     - [Desktops](#desktops)
@@ -43,7 +43,7 @@
 
 O Bazzite é feito a partir do [ublue-os/main](https://github.com/ublue-os/main) e do [ublue-os/nvidia](https://github.com/ublue-os/nvidia) utilizando tecnologia [Fedora](https://fedoraproject.org/), e portanto um suporte estendido a hardware e drivers já estão inclusos. Adicionalmente, o Bazzite traz os seguintes recursos:
 
-- Usa o [kernel-bazzite](https://github.com/bazzite-org/kernel-bazzite) para habilitar o HDR e um suporte estendido a hardware, entre outros vários patches - baseado no [kernel-fsync](https://copr.fedorainfracloud.org/coprs/sentry/kernel-fsync/).
+- Usa o [kernel-bazzite](https://github.com/bazzite-org/kernel-bazzite) para habilitar o HDR e um suporte estendido a hardware, entre outros vários patches.
 - HDR disponível no Game mode.
 - NVK disponível em versões não-Nvidia.
 - Suporte completo à decodificação de hardware em codecs H264.
